@@ -8,6 +8,7 @@ class UnityAnimTranslator : public MPxFileTranslator
 public:
 	UnityAnimTranslator();
 	virtual ~UnityAnimTranslator();
+	static void* creator();
 	virtual MStatus writer(const MFileObject&, const MString&, MPxFileTranslator::FileAccessMode);
 	bool haveReadMethod() const { return false; }
 	bool haveWriteMethod() const { return true; }
