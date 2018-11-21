@@ -2,6 +2,10 @@
 #define UNITYTRANSFORMNODE_H
 
 #include <maya/MPxTransform.h>
+#include <maya/MFnTypedAttribute.h>
+#include <maya/MFnData.h>
+#include <maya/MFnCompoundAttribute.h>
+#include <maya/MFnNumericAttribute.h>
 
 
 class UnityTransformNode : public MPxTransform {
@@ -28,7 +32,12 @@ public:
 	static MTypeId id;
 
 protected:
-	static MObject components;
+	static MObject unity_guid;
+	static MObject image_components;
+	static MObject image_component_order;
+	static MObject unknown_script_components;
+	static MObject unknown_script_component_order;
+	static MObject script_data;
 };
 
 #endif // !UNITYTRANSFORMNODE_H

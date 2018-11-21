@@ -14,7 +14,7 @@ MStatus initializePlugin(MObject obj) {
 		);
 
 	CHECK_MSTATUS_AND_RETURN_IT(status);
-	status = plugin.registerFileTranslator("unity",
+	status = plugin.registerFileTranslator("Unity Prefab",
 		"none",
 		UnityAnimTranslator::creator,
 		"ExportOptions",
