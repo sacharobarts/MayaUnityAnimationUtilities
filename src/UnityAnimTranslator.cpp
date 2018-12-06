@@ -23,53 +23,80 @@ MStatus UnityAnimTranslator::writer(const MFileObject& file, const MString& expo
 MStatus UnityAnimTranslator::reader(const MFileObject& file, const MString& import_options, MPxFileTranslator::FileAccessMode file_access_mode) {
 
 	MGlobal::displayInfo(file.resolvedFullName());
-	//YAML::Node yaml_node;
 	
 	std::vector<YAML::Node> yaml_documents;
+
 	try{
 		yaml_documents = YAML::LoadAllFromFile(file.resolvedFullName().asChar());
-		//yaml_node = YAML::LoadFile(file.resolvedFullName().asChar());
 	}
 	catch(YAML::ParserException& e){
 		MGlobal::displayError(e.what());
 		return MS::kFailure;
 	}
-	/*switch (yaml_node.Type()) {
-		case YAML::NodeType::Null:
-			MGlobal::displayInfo("null");
-		case YAML::NodeType::Scalar:
-			MGlobal::displayInfo("scalar");
-		case YAML::NodeType::Sequence:
-			MGlobal::displayInfo("sequence");
-		case YAML::NodeType::Map:
-			MGlobal::displayInfo("map");
-		case YAML::NodeType::Undefined:
-			MGlobal::displayInfo("undefined");
-	}*/
-	/*MGlobal::displayInfo(MString("pre_it ") + yaml_node.as<std::string>().c_str());
-	MGlobal::displayInfo(MString("pre_it size") + yaml_node.size());
-	MGlobal::displayInfo(MString("pre_it [1] ") + yaml_node[1].as<std::string>().c_str());
 
-	for (YAML::const_iterator it = yaml_node.begin(); it != yaml_node.end(); it++) {
-		MGlobal::displayInfo(MString("type ") + it->Type());
-		MGlobal::displayInfo(MString("normal ") + it->as<std::string>().c_str());
-		MGlobal::displayInfo(MString("first ") + it->first.as<std::string>().c_str());
-		MGlobal::displayInfo(MString("second ") + it->second.as<std::string>().c_str());
+	DEBUG_OUT("Number of documents: ", yaml_documents.size());
 
-	}*/
-	MGlobal::displayInfo(MString("number of documents in yaml: ") + yaml_documents.size());
-	MGlobal::displayInfo(MString("type: ") + yaml_documents[0].Type());
+	PrefabData prefab_data;
 
-	for (const auto& kv : yaml_documents[0]) {
-		const YAML::Node& fval = kv.first;
-		const YAML::Node& value = kv.second;
-		MGlobal::displayInfo(MString("kv first value type: ") + fval.Type());
-		MGlobal::displayInfo(MString("kv first value: ") + fval.as<std::string>().c_str());
+	for (const auto doc : yaml_documents) {
+		int tag = ParseDocumentTag(doc.Tag());
+		if (tag == -1) {
+			ERROR_OUT("Unable to parse document tag: ", doc.Tag());
+			return MS::kFailure;
+		}
 
-		MGlobal::displayInfo(MString("kv second value type: ") + value.Type());
-		MGlobal::displayInfo(MString("kv second value: ") + value.as<std::string>().c_str());
-		
+		switch (tag) {
+		case 1: { // GameObject
+			DEBUG_OUT("[Document]: GameObject");
+			GameObject go;
+			if (!go.ParseNode(doc["GameObject"])) {
+				ERROR_OUT("Unable to process document GameObject: ", YAML::Dump(doc["GameObject"]));
+				return MS::kFailure;
+			}
+			prefab_data.AddGameObject(go);
+			break;
+		}
+		case 2:
+			DEBUG_OUT("[Document]: Component");
+			// @TODO: gameobject lookup and attchment
+			break;
+		case 4: { // Transform
+			DEBUG_OUT("[Document]: Transform");
+			/*Transform trns = ParseTransfrom(doc["Transform"]);
+			std::map<std::string, GameObject>::iterator it = prefab_data.game_objects.find(trns.GetFather());
+			if (it == prefab_data.game_objects.end()) {
+				DEBUG_OUT("[Error]: unable to find gameobject that coorisponds with transform");
+			}
+			else {
+				it->second.SetTransform(trns);
+			}*/
+			break;
+		}
+		case 43:
+			DEBUG_OUT("[Document]: Mesh");
+			// @TODO: make/attch mesh?
+			break;
+		case 99:
+			DEBUG_OUT("[Document]: Image");
+			// @TODO: do image stuff
+			break;
+		default:
+			DEBUG_OUT("[Document]: Unsupported type");
+			// @TODO: Do default attachment stuff;
+			break;
+		}
+
 	}
+
+	// @TODO: iterate over transforms and gameobjects and construct maya objects
 	return MS::kSuccess;
 }
 
+
+int UnityAnimTranslator::ParseDocumentTag(const std::string& tag_string) {
+	size_t pos = tag_string.find_last_of('!');
+	if (pos == std::string::npos) {
+		return -1;
+	}
+	return std::stoi(tag_string.substr(pos + 1));
+}

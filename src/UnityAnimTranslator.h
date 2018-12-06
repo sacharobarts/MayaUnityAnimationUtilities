@@ -10,7 +10,9 @@
 #include <string>
 #include <fstream>
 #include "yaml-cpp/yaml.h"
-
+#include "prefabdata.h"
+#include "dbgmsg.h"
+#include "errmsg.h"
 
 class UnityAnimTranslator : public MPxFileTranslator
 {
@@ -23,7 +25,8 @@ public:
 	bool haveReadMethod() const { return true; }
 	bool haveWriteMethod() const { return true; }
 	MString defaultExtension() const { return MString("prefab"); }
-
+private:
+	int ParseDocumentTag(const std::string&);
 	
 
 };

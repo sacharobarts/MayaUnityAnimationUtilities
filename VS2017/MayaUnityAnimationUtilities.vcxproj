@@ -19,7 +19,13 @@
     </ProjectConfiguration>
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="..\src\dbgmsg.h" />
+    <ClInclude Include="..\src\errmsg.h" />
+    <ClInclude Include="..\src\gameobject.h" />
+    <ClInclude Include="..\src\prefabdata.h" />
+    <ClInclude Include="..\src\transform.h" />
     <ClInclude Include="..\src\UnityAnimTranslator.h" />
+    <ClInclude Include="..\src\unityobject.h" />
     <ClInclude Include="..\src\UnityTransformNode.h" />
     <ClInclude Include="..\src\yaml-cpp\anchor.h" />
     <ClInclude Include="..\src\yaml-cpp\binary.h" />
@@ -60,8 +66,12 @@
     <ClInclude Include="..\src\yaml-cpp\yaml.h" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="..\src\gameobject.cpp" />
     <ClCompile Include="..\src\MayaUnityAnimationUtilities.cpp" />
+    <ClCompile Include="..\src\prefabdata.cpp" />
+    <ClCompile Include="..\src\transform.cpp" />
     <ClCompile Include="..\src\UnityAnimTranslator.cpp" />
+    <ClCompile Include="..\src\unityobject.cpp" />
     <ClCompile Include="..\src\UnityTransformNode.cpp" />
   </ItemGroup>
   <PropertyGroup Label="Globals">
@@ -155,6 +165,8 @@
       <ConformanceMode>true</ConformanceMode>
       <AdditionalIncludeDirectories>X:\ProgProjects\MayaUnityAnimationUtilities\src;X:\Program Files\Autodesk\Maya2018\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <PreprocessorDefinitions>WIN32;NDEBUG;_DEBUG;_WINDOWS;NT_PLUGIN;REQUIRE_IOSTREAM;_USRDLL;MAYAPLUGIN1_EXPORTS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <LanguageStandard>
+      </LanguageStandard>
     </ClCompile>
     <Link>
       <OutputFile>$(OutDir)$(TargetName).mll</OutputFile>
