@@ -22,6 +22,10 @@ class EventHandler {
   virtual void OnDocumentStart(const Mark& mark) = 0;
   virtual void OnDocumentEnd() = 0;
 
+  virtual void OnAnchor(const Mark& mark, const std::string& anchor_name) {
+
+  }
+
   virtual void OnNull(const Mark& mark, anchor_t anchor) = 0;
   virtual void OnAlias(const Mark& mark, anchor_t anchor) = 0;
   virtual void OnScalar(const Mark& mark, const std::string& tag,
@@ -33,6 +37,9 @@ class EventHandler {
 
   virtual void OnMapStart(const Mark& mark, const std::string& tag,
                           anchor_t anchor, EmitterStyle::value style) = 0;
+  // @SACHA
+  virtual void OnMapStart(const Mark& mark, const std::string& tag,
+                          anchor_t anchor, std::string anchor_name, EmitterStyle::value style) = 0;
   virtual void OnMapEnd() = 0;
 };
 }

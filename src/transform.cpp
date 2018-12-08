@@ -2,7 +2,13 @@
 
 #include <iostream>
 
-bool Transform::ParseNode(const YAML::Node& node) {
+bool Transform::ParseNode(const YAML::Node& doc) {
+
+	m_file_id = doc.Anchor();
+	if (m_file_id.length() == 0)
+		return false;
+
+	YAML::Node node = doc["Transform"];
 	YAML::Node tl = node["m_LocalPosition"];
 	trans_x = tl["x"].as<double>();
 	trans_y = tl["y"].as<double>();

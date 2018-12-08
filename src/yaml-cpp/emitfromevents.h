@@ -38,7 +38,12 @@ class EmitFromEvents : public EventHandler {
 
   virtual void OnMapStart(const Mark& mark, const std::string& tag,
                           anchor_t anchor, EmitterStyle::value style);
-  virtual void OnMapEnd();
+  //@SACHA
+  virtual void OnMapStart(const Mark& mark, const std::string& tag, 
+                          anchor_t anchor, std::string anchor_name, EmitterStyle::value style);
+
+
+   virtual void OnMapEnd();
 
  private:
   void BeginNode();

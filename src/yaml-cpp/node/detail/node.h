@@ -32,6 +32,11 @@ class node {
   const std::string& scalar() const { return m_pRef->scalar(); }
   const std::string& tag() const { return m_pRef->tag(); }
   EmitterStyle::value style() const { return m_pRef->style(); }
+  
+  // @SACHA
+  const std::string& anchor() const { return m_pRef->anchor(); }
+
+
 
   template <typename T>
   bool equals(const T& rhs, shared_memory_holder pMemory);
@@ -84,6 +89,10 @@ class node {
   void set_tag(const std::string& tag) {
     mark_defined();
     m_pRef->set_tag(tag);
+  }
+
+  void set_anchor(const std::string& anchor) { 
+	  m_pRef->set_anchor(anchor);
   }
 
   // style

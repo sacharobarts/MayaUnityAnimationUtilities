@@ -165,6 +165,13 @@ inline const std::string& Node::Tag() const {
   return m_pNode ? m_pNode->tag() : detail::node_data::empty_scalar();
 }
 
+// @SACHA
+inline const std::string& Node::Anchor() const { 
+	if (!m_isValid)
+		throw InvalidNode();
+	return m_pNode ? m_pNode->anchor() : detail::node_data::empty_scalar();
+}
+
 inline void Node::SetTag(const std::string& tag) {
   if (!m_isValid)
     throw InvalidNode();

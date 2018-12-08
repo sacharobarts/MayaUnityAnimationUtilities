@@ -7,6 +7,7 @@ class Transform : public UnityObject {
 public:
 	virtual bool ParseNode(const YAML::Node&);
 	std::string GetFather();
+	std::string GetGameObject() { return m_gameobject; }
 private:
 	double trans_x, trans_y, trans_z;
 	double rot_x, rot_y, rot_z;

@@ -6,6 +6,7 @@
 #include <maya/MPxFileTranslator.h>
 #include <maya/MGlobal.h>
 #include <maya/MString.h>
+#include <maya/MDagModifier.h>
 #include <vector>
 #include <string>
 #include <fstream>
@@ -27,7 +28,7 @@ public:
 	MString defaultExtension() const { return MString("prefab"); }
 private:
 	int ParseDocumentTag(const std::string&);
-	
+	bool CreateMayaHierarchy(PrefabData&);
 
 };
 

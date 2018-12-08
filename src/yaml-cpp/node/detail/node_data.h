@@ -49,6 +49,9 @@ class YAML_CPP_API node_data {
   const std::string& scalar() const { return m_scalar; }
   const std::string& tag() const { return m_tag; }
   EmitterStyle::value style() const { return m_style; }
+  // @SACHA
+  const std::string& anchor() const { return m_anchor; }
+  void set_anchor(const std::string& anchor);
 
   // size/iterator
   std::size_t size() const;
@@ -103,6 +106,9 @@ class YAML_CPP_API node_data {
   NodeType::value m_type;
   std::string m_tag;
   EmitterStyle::value m_style;
+
+  // @SACHA
+  std::string m_anchor;
 
   // scalar
   std::string m_scalar;

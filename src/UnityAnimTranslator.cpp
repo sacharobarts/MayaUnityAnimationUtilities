@@ -39,9 +39,15 @@ MStatus UnityAnimTranslator::reader(const MFileObject& file, const MString& impo
 	PrefabData prefab_data;
 
 	for (const auto doc : yaml_documents) {
+
 		int tag = ParseDocumentTag(doc.Tag());
 		if (tag == -1) {
 			ERROR_OUT("Unable to parse document tag: ", doc.Tag());
+			return MS::kFailure;
+		}
+
+		if (doc.Anchor().length() == 0) {
+			ERROR_OUT("Document has no ID anchor: ", YAML::Dump(doc));
 			return MS::kFailure;
 		}
 
@@ -49,8 +55,8 @@ MStatus UnityAnimTranslator::reader(const MFileObject& file, const MString& impo
 		case 1: { // GameObject
 			DEBUG_OUT("[Document]: GameObject");
 			GameObject go;
-			if (!go.ParseNode(doc["GameObject"])) {
-				ERROR_OUT("Unable to process document GameObject: ", YAML::Dump(doc["GameObject"]));
+			if (!go.ParseNode(doc)) {
+				ERROR_OUT("Unable to process document GameObject: ", YAML::Dump(doc));
 				return MS::kFailure;
 			}
 			prefab_data.AddGameObject(go);
@@ -62,14 +68,19 @@ MStatus UnityAnimTranslator::reader(const MFileObject& file, const MString& impo
 			break;
 		case 4: { // Transform
 			DEBUG_OUT("[Document]: Transform");
-			/*Transform trns = ParseTransfrom(doc["Transform"]);
-			std::map<std::string, GameObject>::iterator it = prefab_data.game_objects.find(trns.GetFather());
-			if (it == prefab_data.game_objects.end()) {
-				DEBUG_OUT("[Error]: unable to find gameobject that coorisponds with transform");
+			Transform trns;
+			if (!trns.ParseNode(doc)) {
+				ERROR_OUT("Unable to process document Transform: ", YAML::Dump(doc));
+				return MS::kFailure;
 			}
-			else {
+			std::map<std::string, GameObject>::iterator it = prefab_data.game_objects.find(trns.GetGameObject());
+			if (it == prefab_data.game_objects.end()) {
+				ERROR_OUT("[Transform]: Unable to find Transform's owning GameObject: ",trns.GetGameObject());
+				return MS::kFailure;
+			} else {
+				DEBUG_OUT("[Transform]: Found Transform's father!")
 				it->second.SetTransform(trns);
-			}*/
+			}
 			break;
 		}
 		case 43:
@@ -89,6 +100,8 @@ MStatus UnityAnimTranslator::reader(const MFileObject& file, const MString& impo
 	}
 
 	// @TODO: iterate over transforms and gameobjects and construct maya objects
+	CreateMayaHierarchy(prefab_data);
+
 	return MS::kSuccess;
 }
 
@@ -100,3 +113,32 @@ int UnityAnimTranslator::ParseDocumentTag(const std::string& tag_string) {
 	}
 	return std::stoi(tag_string.substr(pos + 1));
 }
+
+
+bool UnityAnimTranslator::CreateMayaHierarchy(PrefabData& prefab_data) {
+
+	DEBUG_OUT("Creating Maya Hierarchy...");
+
+	auto it = prefab_data.game_objects.begin();
+
+
+	MStatus status;
+	MDagModifier dagmod;
+	for (auto uobj : prefab_data.game_objects) {
+		MObject mobj = dagmod.createNode(MString("UnityTransform"), MObject::kNullObj, &status);
+		if (status != MS::kSuccess) {
+			ERROR_OUT("Failed to create UnityTransform node");
+			return false;
+		}
+		DEBUG_OUT("Renaming node to: ", uobj.second.GetName());
+		status = dagmod.renameNode(mobj, MString(uobj.second.GetName().c_str()));
+		
+
+		uobj.second.SetGameObject(mobj);
+	}
+
+	DEBUG_OUT("Calling doIt");
+	dagmod.doIt();
+	return true;
+}
+
