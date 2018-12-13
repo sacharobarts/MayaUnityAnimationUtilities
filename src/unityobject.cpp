@@ -4,10 +4,7 @@
 bool UnityObject::CreateNode() {
 	return true;
 }
-//bool UnityObject::ParseNode(const YAML::Node& node) {
-//
-//}
-//
+
 bool UnityObject::DumpNode(const YAML::Node&) {
 
 	return true;

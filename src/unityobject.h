@@ -3,6 +3,7 @@
 
 #include <string>
 #include <vector>
+
 #include "yaml-cpp/yaml.h"
 
 class UnityObject {
@@ -14,7 +15,6 @@ public:
 	std::string GetFileID() { return m_file_id; }
 protected:
 	std::string m_file_id;
-private:
 	std::string m_data;
 };
 

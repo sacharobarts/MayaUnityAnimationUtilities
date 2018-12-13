@@ -1,5 +1,7 @@
 #include "gameobject.h"
 
+// MObject GameObject::m_maya_object;
+
 bool GameObject::ParseNode(const YAML::Node& doc) {
 	m_file_id = doc.Anchor();
 	if (m_file_id.length() == 0)

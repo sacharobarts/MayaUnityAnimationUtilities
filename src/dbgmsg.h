@@ -1,7 +1,7 @@
 #ifndef _DBGMSG_H
 #define _DBGMSG_H
 #include <iostream>
-
+#include <maya/MGlobal.h>
 #ifdef _DEBUG
 #define DEBUG_OUT(...)     VariadicToOutputStream("[",__LINE__,"]","[",__FUNCTION__,"]: ",__VA_ARGS__);
 #else

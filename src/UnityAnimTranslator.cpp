@@ -1,5 +1,8 @@
 #include "UnityAnimTranslator.h"
 
+PrefabData UnityAnimTranslator::prefab_data;
+
+MObjectArray UnityAnimTranslator::test;
 
 UnityAnimTranslator::UnityAnimTranslator() {
 
@@ -22,7 +25,7 @@ MStatus UnityAnimTranslator::writer(const MFileObject& file, const MString& expo
 
 MStatus UnityAnimTranslator::reader(const MFileObject& file, const MString& import_options, MPxFileTranslator::FileAccessMode file_access_mode) {
 
-	MGlobal::displayInfo(file.resolvedFullName());
+	DEBUG_OUT("Reading from:", file.resolvedFullName());
 	
 	std::vector<YAML::Node> yaml_documents;
 
@@ -36,7 +39,7 @@ MStatus UnityAnimTranslator::reader(const MFileObject& file, const MString& impo
 
 	DEBUG_OUT("Number of documents: ", yaml_documents.size());
 
-	PrefabData prefab_data;
+	// PrefabData prefab_data;
 
 	for (const auto doc : yaml_documents) {
 
@@ -100,7 +103,7 @@ MStatus UnityAnimTranslator::reader(const MFileObject& file, const MString& impo
 	}
 
 	// @TODO: iterate over transforms and gameobjects and construct maya objects
-	CreateMayaHierarchy(prefab_data);
+	CreateMayaHierarchy();
 
 	return MS::kSuccess;
 }
@@ -115,7 +118,7 @@ int UnityAnimTranslator::ParseDocumentTag(const std::string& tag_string) {
 }
 
 
-bool UnityAnimTranslator::CreateMayaHierarchy(PrefabData& prefab_data) {
+bool UnityAnimTranslator::CreateMayaHierarchy() {
 
 	DEBUG_OUT("Creating Maya Hierarchy...");
 
@@ -126,15 +129,52 @@ bool UnityAnimTranslator::CreateMayaHierarchy(PrefabData& prefab_data) {
 	MDagModifier dagmod;
 	for (auto uobj : prefab_data.game_objects) {
 		MObject mobj = dagmod.createNode(MString("UnityTransform"), MObject::kNullObj, &status);
+
 		if (status != MS::kSuccess) {
 			ERROR_OUT("Failed to create UnityTransform node");
 			return false;
 		}
 		DEBUG_OUT("Renaming node to: ", uobj.second.GetName());
 		status = dagmod.renameNode(mobj, MString(uobj.second.GetName().c_str()));
-		
+		uobj.second.SetMObject(mobj);
 
-		uobj.second.SetGameObject(mobj);
+		test.append(mobj);
+		DEBUG_OUT("ARRAY SCOPE:", test[0].apiTypeStr());
+	}
+
+	DEBUG_OUT("Starting reparenting and setting transform values...")
+	// @TODO: Look for a way to optimize this into 1 step instead of a "create" then "parent" step
+	for (auto uobjpair : prefab_data.game_objects) {
+		GameObject uobj = uobjpair.second;
+		Transform trns_data = uobj.GetTransform();
+		std::string father = trns_data.GetFather();
+
+		// Get father MObject and reparent
+		if (father.length() != 0) {
+			//@TODO: needs a way to error check this in case father cannot be found...
+			for (auto obs : prefab_data.game_objects) {
+				Transform tr = obs.second.GetTransform();
+				if (father == tr.GetFileID()){
+					DEBUG_OUT("Reparenting");
+					DEBUG_OUT(father, tr.GetFileID());
+					DEBUG_OUT(uobj.GetMObject().apiTypeStr());
+					DEBUG_OUT(obs.second.GetMObject().apiTypeStr());
+					DEBUG_OUT("ARRAY OUT OF SCOPE:", test[0].apiTypeStr());
+//					status = dagmod.reparentNode(a, b);
+					// status = dagmod.reparentNode(uobj.GetMObject(), obs.second.GetMObject());
+					CHECK_MSTATUS_AND_RETURN_IT(status);
+					break;
+				}
+			}
+			CHECK_MSTATUS_AND_RETURN_IT(status);
+		}
+
+		// Set local transform, rotation 
+		MFnTransform fntrans(uobj.GetMObject(), &status);
+		fntrans.setTranslation(MVector(trns_data.tx, trns_data.ty, trns_data.tz), MSpace::kTransform);
+		fntrans.setRotation(MQuaternion(trns_data.rx, trns_data.ry, trns_data.rz, trns_data.rw));
+		double scale_vals[]{ trns_data.sx,trns_data.sy,trns_data.sz };
+		fntrans.setScale(scale_vals);
 	}
 
 	DEBUG_OUT("Calling doIt");
