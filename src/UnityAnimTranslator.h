@@ -36,9 +36,7 @@ public:
 private:
 	int ParseDocumentTag(const std::string&);
 	bool CreateMayaHierarchy();
-
 	static PrefabData prefab_data;
-	static MObjectArray test;
 };
 
 
