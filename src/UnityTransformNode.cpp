@@ -6,6 +6,8 @@ MObject UnityTransformNode::image_components;
 MObject UnityTransformNode::unknown_script_components;
 MObject UnityTransformNode::unknown_script_component_order;
 MObject UnityTransformNode::script_data;
+MObject UnityTransformNode::unity_gameobject_guid;
+MObject UnityTransformNode::unity_transform_guid;
 
 UnityTransformNode::UnityTransformNode(): MPxTransform() {
 
@@ -33,9 +35,28 @@ MPxTransformationMatrix *UnityTransformNode::createTransformationMatrix() {
 
 MStatus UnityTransformNode::initialize() {
 	
+	MStatus status;
+	MStatus status2;
+
 	MFnTypedAttribute fnAttr;
 	MFnNumericAttribute fnNumAttr;
 	MFnCompoundAttribute fnCmpAttr;
+
+	MFnStringData fnStringData;
+
+	unity_gameobject_guid = fnAttr.create("unityGameObjectGUID", "ugg", MFnData::kString,fnStringData.create(&status2),&status);
+	fnAttr.setStorable(true);
+	fnAttr.setKeyable(false);
+	fnAttr.setHidden(false);
+	fnAttr.setReadable(true);
+	fnAttr.setWritable(true);
+
+	unity_transform_guid = fnAttr.create("unityTransformGUID", "utg", MFnData::kString,fnStringData.create(&status2), &status);
+	fnAttr.setStorable(true);
+	fnAttr.setKeyable(false);
+	fnAttr.setHidden(false);
+	fnAttr.setReadable(true);
+	fnAttr.setWritable(true);
 
 	script_data = fnAttr.create("scriptData", "scd", MFnData::kString);
 	fnNumAttr.setKeyable(true);
@@ -65,6 +86,8 @@ MStatus UnityTransformNode::initialize() {
 	
 	addAttribute(unknown_script_components);
 	addAttribute(image_components);
+	addAttribute(unity_gameobject_guid);
+	addAttribute(unity_transform_guid);
 
 	return MS::kSuccess;
 }

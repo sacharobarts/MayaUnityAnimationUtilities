@@ -12,6 +12,8 @@
 #include <maya/MVector.h>
 #include <maya/MQuaternion.h>
 #include <maya/MObjectArray.h>
+#include <maya/MFn.h>
+#include <maya/MPlug.h>
 #include <vector>
 #include <string>
 #include <fstream>

@@ -134,7 +134,7 @@ bool UnityAnimTranslator::CreateMayaHierarchy() {
 		}
 		DEBUG_OUT("Renaming node to: ", it->second.GetName());
 		status = dagmod.renameNode(mobj, MString(it->second.GetName().c_str()));
-		it->second.SetMObject(&mobj);
+		it->second.SetMObject(mobj);
 	}
 	
 	for (auto it = prefab_data.game_objects.begin(); it != prefab_data.game_objects.end(); it++) {
@@ -148,11 +148,11 @@ bool UnityAnimTranslator::CreateMayaHierarchy() {
 			for (auto sit = prefab_data.game_objects.begin(); sit != prefab_data.game_objects.end(); sit++) {
 				Transform tr = sit->second.GetTransform();
 				if (father == tr.GetFileID()){
-					DEBUG_OUT("Reparenting");
-					DEBUG_OUT(father, tr.GetFileID());
-					prefab_data.game_objects.find("123");
-					// DEBUG_OUT("CHECKING VALID:", it->second.GetMObject().apiTypeStr(), sit->second.GetMObject().apiTypeStr());
-					// status = dagmod.reparentNode(uobj.GetMObject(), sit->second.GetMObject());
+					if (it->second.GetMObject().apiType() != MFn::kPluginTransformNode || sit->second.GetMObject().apiType() != MFn::kPluginTransformNode) {
+						ERROR_OUT("One or more MObjects meant for reparenting is invalid");
+						return false;
+					}
+					status = dagmod.reparentNode(it->second.GetMObject(), sit->second.GetMObject());
 					CHECK_MSTATUS_AND_RETURN_IT(status);
 					break;
 				}
@@ -161,67 +161,47 @@ bool UnityAnimTranslator::CreateMayaHierarchy() {
 		}
 
 		// Set local transform, rotation 
-		//MFnTransform fntrans(it->second.GetMObject(), &status);
-		//fntrans.setTranslation(MVector(trns_data.tx, trns_data.ty, trns_data.tz), MSpace::kTransform);
-		//fntrans.setRotation(MQuaternion(trns_data.rx, trns_data.ry, trns_data.rz, trns_data.rw));
-		//double scale_vals[]{ trns_data.sx,trns_data.sy,trns_data.sz };
-		//fntrans.setScale(scale_vals);
+		MFnTransform fntrans(it->second.GetMObject(), &status);
+		fntrans.setTranslation(MVector(trns_data.tx, trns_data.ty, trns_data.tz), MSpace::kTransform);
+		fntrans.setRotation(MQuaternion(trns_data.rx, trns_data.ry, trns_data.rz, trns_data.rw));
+		double scale_vals[]{ trns_data.sx,trns_data.sy,trns_data.sz };
+		fntrans.setScale(scale_vals);
+
+		// Set visibility to false if gameobject isn't active
+		if (!it->second.GetIsActive()) {
+			MPlug vis_plug = fntrans.findPlug("visibility", status);
+			if (status == MS::kFailure) {
+				ERROR_OUT("Unable to find visibility Plug on", fntrans.fullPathName());
+				return false;
+			}
+			vis_plug.setBool(false);
+		}
+
+		// Set unity GameObject guid attr
+		MPlug guid_attr = fntrans.findPlug("unityGameObjectGUID", status);
+		if (status != MS::kSuccess) {
+			ERROR_OUT("Unable to find unityGameObjectGUID Plug on", fntrans.fullPathName());
+			return false;
+		}
+		status = guid_attr.setValue(it->second.GetFileID().c_str());
+		if (status != MS::kSuccess) {
+			ERROR_OUT("Unable to set unityGameObjectGUID attribute on", fntrans.fullPathName());
+			return false;
+		}
+
+		// Set unity Transform guid attr
+		guid_attr = fntrans.findPlug("unityTransformGUID", status);
+		if (status != MS::kSuccess) {
+			ERROR_OUT("Unable to find unityTransformGUID Plug on", fntrans.fullPathName());
+			return false;
+		}
+		status = guid_attr.setValue(trns_data.GetFileID().c_str());
+		if (status != MS::kSuccess) {
+			ERROR_OUT("Unable to set unityTransfromGUID attribute on", fntrans.fullPathName());
+			return false;
+		}
 
 	}
-
-
-	//for (auto uobj : prefab_data.game_objects) {
-	//	MObject mobj = dagmod.createNode(MString("UnityTransform"), MObject::kNullObj, &status);
-
-	//	if (status != MS::kSuccess) {
-	//		ERROR_OUT("Failed to create UnityTransform node");
-	//		return false;
-	//	}
-	//	DEBUG_OUT("Renaming node to: ", uobj.second.GetName());
-	//	status = dagmod.renameNode(mobj, MString(uobj.second.GetName().c_str()));
-
-	//	status = mobjs.append(mobj);
-	//	if (status == MS::kFailure) {
-	//		ERROR_OUT("Failed to append MObject to MObjectArray: mobjs");
-	//		return false;
-	//	}
-	//	uobj.second.SetMObject(&mobjs[0]);
-	//}
-
-	//DEBUG_OUT("Starting reparenting and setting transform values...")
-	//// @TODO: Look for a way to optimize this into 1 step instead of a "create" then "parent" step
-	//for (auto uobjpair : prefab_data.game_objects) {
-	//	GameObject uobj = uobjpair.second;
-	//	Transform trns_data = uobj.GetTransform();
-	//	std::string father = trns_data.GetFather();
-
-	//	// Get father MObject and reparent
-	//	if (father.length() != 0) {
-	//		//@TODO: needs a way to error check this in case father cannot be found...
-	//		for (auto obs : prefab_data.game_objects) {
-	//			Transform tr = obs.second.GetTransform();
-	//			if (father == tr.GetFileID()){
-	//				DEBUG_OUT("Reparenting");
-	//				DEBUG_OUT(father, tr.GetFileID());
-	//				uobj.GetMObject();
-	//				// obs.second.GetMObject();
-	//				//DEBUG_OUT(uobj.GetMObject().apiTypeStr());
-	//				// DEBUG_OUT(obs.second.GetMObject().apiTypeStr());
-	//				// status = dagmod.reparentNode(uobj.GetMObject(), obs.second.GetMObject());
-	//				CHECK_MSTATUS_AND_RETURN_IT(status);
-	//				break;
-	//			}
-	//		}
-	//		CHECK_MSTATUS_AND_RETURN_IT(status);
-	//	}
-
-		// Set local transform, rotation 
-		//MFnTransform fntrans(uobj.GetMObject(), &status);
-		//fntrans.setTranslation(MVector(trns_data.tx, trns_data.ty, trns_data.tz), MSpace::kTransform);
-		//fntrans.setRotation(MQuaternion(trns_data.rx, trns_data.ry, trns_data.rz, trns_data.rw));
-		//double scale_vals[]{ trns_data.sx,trns_data.sy,trns_data.sz };
-		//fntrans.setScale(scale_vals);
-	// }
 
 	DEBUG_OUT("Calling doIt");
 	dagmod.doIt();

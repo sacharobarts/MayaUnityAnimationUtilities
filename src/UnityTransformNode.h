@@ -6,7 +6,7 @@
 #include <maya/MFnData.h>
 #include <maya/MFnCompoundAttribute.h>
 #include <maya/MFnNumericAttribute.h>
-
+#include <maya/MFnStringData.h>
 
 class UnityTransformNode : public MPxTransform {
 public:
@@ -32,7 +32,8 @@ public:
 	static MTypeId id;
 
 protected:
-	static MObject unity_guid;
+	static MObject unity_gameobject_guid;
+	static MObject unity_transform_guid;
 	static MObject image_components;
 	static MObject image_component_order;
 	static MObject unknown_script_components;
