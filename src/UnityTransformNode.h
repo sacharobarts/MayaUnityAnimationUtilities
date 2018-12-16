@@ -34,6 +34,16 @@ public:
 protected:
 	static MObject unity_gameobject_guid;
 	static MObject unity_transform_guid;
+
+	static MObject unity_object_hide_flags;
+	static MObject unity_corresponding_source_object;
+	static MObject unity_prefab_internal;
+	static MObject unity_serialized_version;
+	static MObject unity_layer;
+	static MObject unity_tag_string;
+	static MObject unity_navmesh_layer;
+	static MObject unity_static_editor_flags;
+
 	static MObject image_components;
 	static MObject image_component_order;
 	static MObject unknown_script_components;

@@ -8,6 +8,14 @@ MObject UnityTransformNode::unknown_script_component_order;
 MObject UnityTransformNode::script_data;
 MObject UnityTransformNode::unity_gameobject_guid;
 MObject UnityTransformNode::unity_transform_guid;
+MObject UnityTransformNode::unity_object_hide_flags;
+MObject UnityTransformNode::unity_corresponding_source_object;
+MObject UnityTransformNode::unity_prefab_internal;
+MObject UnityTransformNode::unity_serialized_version;
+MObject UnityTransformNode::unity_layer;
+MObject UnityTransformNode::unity_tag_string;
+MObject UnityTransformNode::unity_navmesh_layer;
+MObject UnityTransformNode::unity_static_editor_flags;
 
 UnityTransformNode::UnityTransformNode(): MPxTransform() {
 
@@ -58,11 +66,71 @@ MStatus UnityTransformNode::initialize() {
 	fnAttr.setReadable(true);
 	fnAttr.setWritable(true);
 
-	script_data = fnAttr.create("scriptData", "scd", MFnData::kString);
-	fnNumAttr.setKeyable(true);
-	// fnAttr.setWritable(false);
+	unity_object_hide_flags  = fnNumAttr.create("unityObjectHideFlags", "uhf", MFnNumericData::Type::kInt, 0, &status);
+	fnAttr.setStorable(true);
+	fnAttr.setKeyable(false);
+	fnAttr.setHidden(false);
+	fnAttr.setReadable(true);
+	fnAttr.setWritable(true);
 
-	unknown_script_component_order = fnNumAttr.create("scriptComponentOrder", "co", MFnNumericData::kInt);
+	unity_corresponding_source_object = fnAttr.create("unityCorrespondingSourceObject", "ucs", MFnData::kString,fnStringData.create(&status2),&status);
+	fnAttr.setStorable(true);
+	fnAttr.setKeyable(false);
+	fnAttr.setHidden(false);
+	fnAttr.setReadable(true);
+	fnAttr.setWritable(true);
+
+	unity_prefab_internal = fnAttr.create("unityPrefabInternal", "upi", MFnData::kString,fnStringData.create(&status2),&status);
+	fnAttr.setStorable(true);
+	fnAttr.setKeyable(false);
+	fnAttr.setHidden(false);
+	fnAttr.setReadable(true);
+	fnAttr.setWritable(true);
+
+	unity_serialized_version = fnNumAttr.create("unitySerializedVersion", "usv", MFnNumericData::Type::kInt,0,&status);
+	fnAttr.setStorable(true);
+	fnAttr.setKeyable(false);
+	fnAttr.setHidden(false);
+	fnAttr.setReadable(true);
+	fnAttr.setWritable(true);
+
+	unity_layer = fnNumAttr.create("unityLayer", "ulr", MFnNumericData::Type::kInt, 0, &status);
+	fnAttr.setStorable(true);
+	fnAttr.setKeyable(false);
+	fnAttr.setHidden(false);
+	fnAttr.setReadable(true);
+	fnAttr.setWritable(true);
+
+	unity_tag_string = fnAttr.create("unityTagString", "uts", MFnData::kString,fnStringData.create(&status2), &status);
+	fnAttr.setStorable(true);
+	fnAttr.setKeyable(false);
+	fnAttr.setHidden(false);
+	fnAttr.setReadable(true);
+	fnAttr.setWritable(true);
+
+	unity_navmesh_layer = fnNumAttr.create("unityNavmeshLayer", "unl", MFnNumericData::Type::kInt, 0, &status);
+	fnAttr.setStorable(true);
+	fnAttr.setKeyable(false);
+	fnAttr.setHidden(false);
+	fnAttr.setReadable(true);
+	fnAttr.setWritable(true);
+
+	unity_static_editor_flags = fnAttr.create("unityStaticEditorFlags", "usf", MFnData::kString,fnStringData.create(&status2), &status);
+	fnAttr.setStorable(true);
+	fnAttr.setKeyable(false);
+	fnAttr.setHidden(false);
+	fnAttr.setReadable(true);
+	fnAttr.setWritable(true);
+
+	script_data = fnAttr.create("scriptData", "scd", MFnData::kString,fnStringData.create(&status2), &status);
+	fnAttr.setStorable(true);
+	fnAttr.setKeyable(false);
+	fnAttr.setHidden(false);
+	fnAttr.setReadable(true);
+	fnAttr.setWritable(true);
+
+
+	unknown_script_component_order = fnNumAttr.create("scriptComponentOrder", "co", MFnNumericData::kInt,0,&status);
 	fnNumAttr.setKeyable(true);
 	//fnNumAttr.setKeyable(false);
 	//fnNumAttr.setHidden(false);
