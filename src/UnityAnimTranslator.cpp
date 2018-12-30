@@ -177,6 +177,7 @@ bool UnityAnimTranslator::CreateMayaHierarchy() {
 			vis_plug.setBool(false);
 		}
 
+
 		// Set unity GameObject guid attr
 		MPlug guid_attr = fntrans.findPlug("unityGameObjectGUID", status);
 		if (status != MS::kSuccess) {
