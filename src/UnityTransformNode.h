@@ -35,6 +35,7 @@ protected:
 	static MObject unity_gameobject_guid;
 	static MObject unity_transform_guid;
 
+	//@TODO: NEED TO CHANGE OBJECTHIDE, CORRESPODNING, AND   INTERNAL TO INCLUDE _GAMEOBJECT_
 	static MObject unity_object_hide_flags;
 	static MObject unity_corresponding_source_object;
 	static MObject unity_prefab_internal;
@@ -43,6 +44,12 @@ protected:
 	static MObject unity_tag_string;
 	static MObject unity_navmesh_layer;
 	static MObject unity_static_editor_flags;
+
+	static MObject unity_transform_object_hide_flags;
+	static MObject unity_transform_corresponding_source_object;
+	static MObject unity_transfrom_prefab_internal;
+	static MObject unity_transfrom_root_order;
+	static MObject unity_transform_local_euler_angles_hint;
 
 	static MObject image_components;
 	static MObject image_component_order;
