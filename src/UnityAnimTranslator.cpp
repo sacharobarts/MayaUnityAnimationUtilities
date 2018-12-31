@@ -85,6 +85,11 @@ MStatus UnityAnimTranslator::reader(const MFileObject& file, const MString& impo
 			}
 			break;
 		}
+		case 114: { // MonoBehaviour script
+			DEBUG_OUT("[Document]: MonoBehaviour");
+
+			break;
+		}
 		case 43:
 			DEBUG_OUT("[Document]: Mesh");
 			// @TODO: make/attch mesh?

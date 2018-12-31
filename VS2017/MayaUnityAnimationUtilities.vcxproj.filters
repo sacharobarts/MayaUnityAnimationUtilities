@@ -153,6 +153,9 @@
     <ClInclude Include="..\src\errmsg.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="..\src\monobehavior.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\src\MayaUnityAnimationUtilities.cpp">

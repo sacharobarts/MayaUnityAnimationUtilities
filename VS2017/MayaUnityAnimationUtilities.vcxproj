@@ -22,6 +22,7 @@
     <ClInclude Include="..\src\dbgmsg.h" />
     <ClInclude Include="..\src\errmsg.h" />
     <ClInclude Include="..\src\gameobject.h" />
+    <ClInclude Include="..\src\monobehavior.h" />
     <ClInclude Include="..\src\prefabdata.h" />
     <ClInclude Include="..\src\transform.h" />
     <ClInclude Include="..\src\UnityAnimTranslator.h" />
